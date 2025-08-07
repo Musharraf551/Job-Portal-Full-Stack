@@ -20,7 +20,7 @@ function Jobs() {
             Authorization: `Bearer ${token}`,
           },
         });
-        setJobs(response.data);
+        setJobs(Array.isArray(response.data) ? response.data : response.data.results);
       } catch (err) {
         console.error(err);
         setError("Failed to fetch jobs. Please make sure you're logged in.");
