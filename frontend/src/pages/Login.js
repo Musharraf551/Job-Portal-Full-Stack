@@ -1,62 +1,57 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../api/axiosInstance';
 
 function Login() {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
-  });
-
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post('token/', credentials);
-      localStorage.setItem('access_token', response.data.access);
-      localStorage.setItem('refresh_token', response.data.refresh);
-      setError('');
-      navigate('/jobs'); // Redirect to job listings after login
-    } catch (err) {
-      setError('Invalid username or password');
+    const response = await fetch('http://localhost:8000/api/token/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Save tokens to localStorage
+      localStorage.setItem('access_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+      navigate('/jobs'); // Redirect after login
+    } else {
+      setError('Invalid credentials');
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px' }}>
+    <div>
       <h2>Login</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleLogin}>
         <div>
-          <label>Username</label>
+          <label>Username:</label>
           <input
             type="text"
-            name="username"
-            value={credentials.username}
-            onChange={handleChange}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
-            style={{ width: '100%', padding: '8px', margin: '8px 0' }}
           />
         </div>
         <div>
-          <label>Password</label>
+          <label>Password:</label>
           <input
             type="password"
-            name="password"
-            value={credentials.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
-            style={{ width: '100%', padding: '8px', margin: '8px 0' }}
           />
         </div>
-        <button type="submit" style={{ padding: '10px 20px' }}>Login</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );
