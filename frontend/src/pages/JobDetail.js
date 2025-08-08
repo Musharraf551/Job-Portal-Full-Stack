@@ -4,54 +4,67 @@ import { useParams } from "react-router-dom";
 function JobDetail() {
   const { id } = useParams();
   const [job, setJob] = useState(null);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [applyMessage, setApplyMessage] = useState("");
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/jobs/${id}/`, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("access")}`
-      }
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch job details");
-        return res.json();
+    fetch(`http://127.0.0.1:8000/api/jobs/${id}/`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch job details");
+        }
+        return response.json();
       })
-      .then((data) => setJob(data))
-      .catch((err) => setError(err.message));
+      .then((data) => {
+        setJob(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
   }, [id]);
 
   const handleApply = () => {
-    fetch(`http://127.0.0.1:8000/api/applications/`, {
+    fetch(`http://127.0.0.1:8000/api/apply/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("access")}`
+        // Add Authorization if backend requires login
+        // "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
       body: JSON.stringify({
-        job: id,
-        cover_letter: "I am interested in this job."
+        job_id: id,
+        cover_letter: "I am very interested in this role." // You can make this dynamic later
       })
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to apply for job");
-        return res.json();
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to apply for job");
+        }
+        return response.json();
       })
-      .then(() => alert("Applied successfully!"))
-      .catch((err) => setError(err.message));
+      .then((data) => {
+        setApplyMessage("Application submitted successfully!");
+      })
+      .catch((err) => {
+        setApplyMessage(err.message);
+      });
   };
 
-  if (error) return <p>{error}</p>;
-  if (!job) return <p>Loading...</p>;
+  if (loading) return <p>Loading job details...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div>
       <h2>{job.title}</h2>
-      <p>{job.company}</p>
-      <p>{job.location}</p>
-      <p>₹{job.salary}</p>
       <p>{job.description}</p>
-      <button onClick={handleApply}>Apply Now</button>
+      <p><strong>Location:</strong> {job.location}</p>
+      {job.salary && <p><strong>Salary:</strong> {job.salary}</p>}
+
+      <button onClick={handleApply}>Apply</button>
+      {applyMessage && <p>{applyMessage}</p>}
     </div>
   );
 }
