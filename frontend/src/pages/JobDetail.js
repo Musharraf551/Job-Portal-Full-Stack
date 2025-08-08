@@ -5,16 +5,16 @@ function JobDetail() {
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
+  const [coverLetter, setCoverLetter] = useState("");
+  const [resume, setResume] = useState(null);
   const [applyMessage, setApplyMessage] = useState("");
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/jobs/${id}/`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch job details");
-        }
-        return response.json();
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch job details");
+        return res.json();
       })
       .then((data) => {
         setJob(data);
@@ -27,30 +27,44 @@ function JobDetail() {
   }, [id]);
 
   const handleApply = () => {
-    fetch(`http://127.0.0.1:8000/api/apply/`, {
+    setApplyMessage("");
+    const token = localStorage.getItem("access_token"); // or "access" if you saved JWT as "access"
+    if (!token) {
+      setApplyMessage("You must be logged in to apply.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("cover_letter", coverLetter);
+    if (resume) formData.append("resume", resume);
+
+    fetch(`http://127.0.0.1:8000/api/jobs/${id}/apply/`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        // Add Authorization if backend requires login
-        // "Authorization": `Bearer ${localStorage.getItem("token")}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        job_id: id,
-        cover_letter: "I am very interested in this role." // You can make this dynamic later
-      })
+      body: formData,
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to apply for job");
+      .then(async (res) => {
+        if (!res.ok) {
+          const resClone = res.clone();
+
+          let errorMsg = "Failed to apply";
+          try {
+            const errorData = await res.json();
+            errorMsg = errorData.detail || JSON.stringify(errorData);
+          } catch {
+            const errorText = await resClone.text();
+            errorMsg = errorText;
+          }
+          throw new Error(errorMsg);
         }
-        return response.json();
-      })
-      .then((data) => {
+        await res.json();
         setApplyMessage("Application submitted successfully!");
+        setCoverLetter("");
+        setResume(null);
       })
-      .catch((err) => {
-        setApplyMessage(err.message);
-      });
+      .catch((err) => setApplyMessage(err.message));
   };
 
   if (loading) return <p>Loading job details...</p>;
@@ -63,7 +77,22 @@ function JobDetail() {
       <p><strong>Location:</strong> {job.location}</p>
       {job.salary && <p><strong>Salary:</strong> {job.salary}</p>}
 
+      <h3>Apply for this job</h3>
+      <textarea
+        value={coverLetter}
+        onChange={(e) => setCoverLetter(e.target.value)}
+        placeholder="Write your cover letter here"
+        rows={5}
+        cols={50}
+      />
+      <br />
+      <input
+        type="file"
+        onChange={(e) => setResume(e.target.files[0])}
+      />
+      <br />
       <button onClick={handleApply}>Apply</button>
+
       {applyMessage && <p>{applyMessage}</p>}
     </div>
   );
