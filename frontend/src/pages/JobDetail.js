@@ -1,41 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const JobDetail = () => {
+function JobDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [job, setJob] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchJob = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8000/api/jobs/${id}/`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
-          }
-        });
-        setJob(response.data);
-      } catch (err) {
-        setError("Failed to fetch job details.");
+    fetch(`http://127.0.0.1:8000/api/jobs/${id}/`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access")}`
       }
-    };
-    fetchJob();
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch job details");
+        return res.json();
+      })
+      .then((data) => setJob(data))
+      .catch((err) => setError(err.message));
   }, [id]);
 
-  const handleApply = async () => {
-    try {
-      await axios.post(`http://localhost:8000/api/jobs/${id}/apply/`, {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
-      });
-      alert("Applied successfully!");
-      navigate('/dashboard');
-    } catch (err) {
-      alert("You have already applied or are not allowed.");
-    }
+  const handleApply = () => {
+    fetch(`http://127.0.0.1:8000/api/applications/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access")}`
+      },
+      body: JSON.stringify({
+        job: id,
+        cover_letter: "I am interested in this job."
+      })
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to apply for job");
+        return res.json();
+      })
+      .then(() => alert("Applied successfully!"))
+      .catch((err) => setError(err.message));
   };
 
   if (error) return <p>{error}</p>;
@@ -44,13 +47,13 @@ const JobDetail = () => {
   return (
     <div>
       <h2>{job.title}</h2>
-      <p><strong>Company:</strong> {job.company}</p>
-      <p><strong>Location:</strong> {job.location}</p>
-      <p><strong>Description:</strong> {job.description}</p>
-      <p><strong>Salary:</strong> ₹{job.salary}</p>
+      <p>{job.company}</p>
+      <p>{job.location}</p>
+      <p>₹{job.salary}</p>
+      <p>{job.description}</p>
       <button onClick={handleApply}>Apply Now</button>
     </div>
   );
-};
+}
 
 export default JobDetail;
