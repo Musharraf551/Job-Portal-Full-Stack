@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserProfile } from '../utils/auth';
 
 function Login() {
   const navigate = useNavigate();

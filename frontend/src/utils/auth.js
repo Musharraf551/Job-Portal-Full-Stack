@@ -1,12 +1,12 @@
 // src/utils/auth.js
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export function getUserInfo() {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
 
   try {
-    const decoded = jwt_decode(token);
+    const decoded = jwtDecode(token);
     return decoded;  // contains standard JWT claims but not is_staff by default
   } catch {
     return null;

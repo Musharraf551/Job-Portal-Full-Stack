@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 function JobPost() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  // Add other job fields as needed
+  const [company, setCompany] = useState("");
+  const [location, setLocation] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ function JobPost() {
   useEffect(() => {
     if (!userProfile || !userProfile.is_staff) {
       alert("Access denied! Admins only.");
-      navigate("/"); // redirect if not admin
+      navigate("/");
     }
   }, [navigate, userProfile]);
 
@@ -25,47 +26,74 @@ function JobPost() {
 
     const token = localStorage.getItem("access_token");
 
-    const res = await fetch("http://127.0.0.1:8000/api/jobs/create/", {
+    const res = await fetch("http://127.0.0.1:8000/api/jobs/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ title, description }),
+      body: JSON.stringify({ title, description, company, location }),
     });
 
     if (res.ok) {
       setSuccess("Job posted successfully!");
       setTitle("");
       setDescription("");
+      setCompany("");
+      setLocation("");
     } else {
       const errorData = await res.json();
-      setError(errorData.detail || "Failed to post job.");
+      setError(errorData.detail || JSON.stringify(errorData));
     }
   };
 
   return (
-    <div>
+    <div className="container mt-4" style={{ maxWidth: "600px" }}>
       <h2>Post a Job (Admin Only)</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
+      {error && <div className="alert alert-danger">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Job Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <br />
-        <textarea
-          placeholder="Job Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <br />
-        <button type="submit">Post Job</button>
+        <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Job Title"
+            className="form-control"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <textarea
+            placeholder="Job Description"
+            className="form-control"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            rows={4}
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Company"
+            className="form-control"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Location"
+            className="form-control"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Post Job</button>
       </form>
     </div>
   );
