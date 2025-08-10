@@ -6,6 +6,7 @@ import Jobs from "./pages/Jobs";
 import MyApplications from "./pages/MyApplications";
 import JobDetail from './pages/JobDetail';
 import Navbar from "./components/Navbar";
+import Register from "./pages/Register";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/my-applications" element={<MyApplications />} />
         <Route path="/jobs/:id" element={<JobDetail />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

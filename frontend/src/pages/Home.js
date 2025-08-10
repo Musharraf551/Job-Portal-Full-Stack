@@ -1,12 +1,23 @@
-import React from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 
-const Home = () => {
+function Home() {
   return (
-    <div>
-      <h1>Welcome to the Job Portal</h1>
-      <p>This is the home page of the Job Application System.</p>
+    <div className="container text-center mt-5">
+      <h1>Welcome to JobPortal</h1>
+      <p className="lead">
+        Find your dream job or hire the best talent easily.
+      </p>
+      <div className="d-flex justify-content-center gap-3 mt-4">
+        <Link to="/jobs" className="btn btn-primary btn-lg">
+          Browse Jobs
+        </Link>
+        <Link to="/login" className="btn btn-outline-primary btn-lg">
+          Login
+        </Link>
+      </div>
     </div>
   );
-};
+}
 
 export default Home;

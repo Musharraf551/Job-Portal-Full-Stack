@@ -28,7 +28,7 @@ function JobDetail() {
 
   const handleApply = () => {
     setApplyMessage("");
-    const token = localStorage.getItem("access_token"); // or "access" if you saved JWT as "access"
+    const token = localStorage.getItem("access_token");
     if (!token) {
       setApplyMessage("You must be logged in to apply.");
       return;
@@ -40,15 +40,12 @@ function JobDetail() {
 
     fetch(`http://127.0.0.1:8000/api/jobs/${id}/apply/`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     })
       .then(async (res) => {
         if (!res.ok) {
           const resClone = res.clone();
-
           let errorMsg = "Failed to apply";
           try {
             const errorData = await res.json();
@@ -60,40 +57,83 @@ function JobDetail() {
           throw new Error(errorMsg);
         }
         await res.json();
-        setApplyMessage("Application submitted successfully!");
+        setApplyMessage("✅ Application submitted successfully!");
         setCoverLetter("");
         setResume(null);
       })
       .catch((err) => setApplyMessage(err.message));
   };
 
-  if (loading) return <p>Loading job details...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading)
+    return (
+      <div className="container mt-5 text-center">
+        <div className="spinner-border text-primary"></div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger">{error}</div>
+      </div>
+    );
 
   return (
-    <div>
-      <h2>{job.title}</h2>
-      <p>{job.description}</p>
-      <p><strong>Location:</strong> {job.location}</p>
-      {job.salary && <p><strong>Salary:</strong> {job.salary}</p>}
+    <div className="container mt-5">
+      <div className="card shadow-sm">
+        <div className="card-body">
+          <h2 className="card-title">{job.title}</h2>
+          <p className="card-text">{job.description}</p>
+          <p>
+            <strong>Location:</strong> {job.location}
+          </p>
+          {job.salary && (
+            <p>
+              <strong>Salary:</strong> {job.salary}
+            </p>
+          )}
+          <p className="text-muted">
+            Posted on: {new Date(job.created_at).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
 
-      <h3>Apply for this job</h3>
-      <textarea
-        value={coverLetter}
-        onChange={(e) => setCoverLetter(e.target.value)}
-        placeholder="Write your cover letter here"
-        rows={5}
-        cols={50}
-      />
-      <br />
-      <input
-        type="file"
-        onChange={(e) => setResume(e.target.files[0])}
-      />
-      <br />
-      <button onClick={handleApply}>Apply</button>
+      <div className="card mt-4">
+        <div className="card-body">
+          <h4 className="card-title mb-3">Apply for this Job</h4>
+          <div className="mb-3">
+            <label className="form-label">Cover Letter</label>
+            <textarea
+              className="form-control"
+              value={coverLetter}
+              onChange={(e) => setCoverLetter(e.target.value)}
+              placeholder="Write your cover letter here"
+              rows={5}
+            ></textarea>
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Upload Resume</label>
+            <input
+              className="form-control"
+              type="file"
+              onChange={(e) => setResume(e.target.files[0])}
+            />
+          </div>
+          <button className="btn btn-primary" onClick={handleApply}>
+            Submit Application
+          </button>
 
-      {applyMessage && <p>{applyMessage}</p>}
+          {applyMessage && (
+            <div
+              className={`alert mt-3 ${
+                applyMessage.includes("✅") ? "alert-success" : "alert-danger"
+              }`}
+            >
+              {applyMessage}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

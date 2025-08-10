@@ -19,40 +19,49 @@ function Login() {
     const data = await response.json();
 
     if (response.ok) {
-      // Save tokens to localStorage
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
-      navigate('/jobs'); // Redirect after login
+      navigate('/jobs');
     } else {
       setError('Invalid credentials');
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-4">
+          <div className="card shadow-lg p-4">
+            <h2 className="text-center mb-4">Login</h2>
+            {error && <div className="alert alert-danger">{error}</div>}
+            <form onSubmit={handleLogin}>
+              <div className="mb-3">
+                <label className="form-label">Username</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-primary w-100">
+                Login
+              </button>
+            </form>
+          </div>
         </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
+      </div>
     </div>
   );
 }
