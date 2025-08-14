@@ -4,21 +4,29 @@ import { Link } from "react-router-dom";
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
+  const [url, setUrl] = useState("http://127.0.0.1:8000/api/jobs/"); // starting URL
+
+  const fetchJobs = async (pageUrl) => {
+    setLoading(true);
+    try {
+      const res = await fetch(pageUrl);
+      const data = await res.json();
+
+      setJobs(data.results || data);
+      setNextPage(data.next);
+      setPrevPage(data.previous);
+    } catch (err) {
+      console.error("Failed to load jobs", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const res = await fetch("http://127.0.0.1:8000/api/jobs/");
-        const data = await res.json();
-        setJobs(data.results || data); // supports both paginated and non-paginated
-      } catch (err) {
-        console.error("Failed to load jobs", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchJobs();
-  }, []);
+    fetchJobs(url);
+  }, [url]);
 
   if (loading) {
     return (
@@ -66,6 +74,25 @@ const Jobs = () => {
           </div>
         ))}
       </div>
+
+      {/* Pagination Buttons */}
+      <div className="d-flex justify-content-between mt-4">
+        <button
+          className="btn btn-secondary"
+          onClick={() => setUrl(prevPage)}
+          disabled={!prevPage}
+        >
+          Previous
+        </button>
+        <button
+          className="btn btn-secondary"
+          onClick={() => setUrl(nextPage)}
+          disabled={!nextPage}
+        >
+          Next
+        </button>
+      </div>
+      <br/>
     </div>
   );
 };
