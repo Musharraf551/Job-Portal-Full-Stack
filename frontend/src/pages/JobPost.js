@@ -36,7 +36,7 @@ function JobPost() {
     });
 
     if (res.ok) {
-      setSuccess("Job posted successfully!");
+      setSuccess("✅ Job posted successfully!");
       setTitle("");
       setDescription("");
       setCompany("");
@@ -48,53 +48,104 @@ function JobPost() {
   };
 
   return (
-    <div className="container mt-4" style={{ maxWidth: "600px" }}>
-      <h2>Post a Job (Admin Only)</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <input
-            type="text"
-            placeholder="Job Title"
-            className="form-control"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <textarea
-            placeholder="Job Description"
-            className="form-control"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            rows={4}
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="text"
-            placeholder="Company"
-            className="form-control"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="text"
-            placeholder="Location"
-            className="form-control"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">Post Job</button>
-      </form>
+    <div
+      className="d-flex justify-content-center align-items-center min-vh-100"
+      style={{
+        background: "linear-gradient(135deg, #667eea, #20d6e3ff)",
+        padding: "20px",
+      }}
+    >
+      <div
+        className="card shadow-lg p-4"
+        style={{
+          width: "100%",
+          maxWidth: "600px",
+          borderRadius: "15px",
+          backgroundColor: "#fff",
+        }}
+      >
+        <h2 className="text-center mb-4" style={{ color: "#333" }}>
+          📄 Post a Job <small className="text-muted">(Admin Only)</small>
+        </h2>
+
+        {error && <div className="alert alert-danger">{error}</div>}
+        {success && <div className="alert alert-success">{success}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label fw-bold">Job Title</label>
+            <input
+              type="text"
+              className="form-control"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              placeholder="Enter job title"
+              style={{ borderRadius: "10px" }}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label fw-bold">Job Description</label>
+            <textarea
+              className="form-control"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              rows={4}
+              placeholder="Describe the job responsibilities"
+              style={{ borderRadius: "10px" }}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label fw-bold">Company</label>
+            <input
+              type="text"
+              className="form-control"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              required
+              placeholder="Enter company name"
+              style={{ borderRadius: "10px" }}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label fw-bold">Location</label>
+            <input
+              type="text"
+              className="form-control"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+              placeholder="Enter job location"
+              style={{ borderRadius: "10px" }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary w-100 fw-bold"
+            style={{
+              padding: "10px",
+              borderRadius: "10px",
+              fontSize: "16px",
+              backgroundColor: "#667eea",
+              border: "none",
+              transition: "all 0.3s ease",
+            }}
+            onMouseOver={(e) =>
+              (e.target.style.backgroundColor = "#5a67d8")
+            }
+            onMouseOut={(e) =>
+              (e.target.style.backgroundColor = "#667eea")
+            }
+          >
+            🚀 Post Job
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
