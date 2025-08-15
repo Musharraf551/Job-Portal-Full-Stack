@@ -1,3 +1,18 @@
+### 🏠 Home Page
+![Home Page](screenshots/home_page.png)
+
+### 📋 Job Listings
+![Job List](screenshots/job_list.png)
+
+### 🔍 Job Details
+![Job Detail](screenshots/job_detail.png)
+
+### 📊 Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### 📝 Job Posting Form
+![Job Post](screenshots/job_post.png)
+
 # Job Application Management System
 
 A **full-stack Job Application Management System** built using **Django REST Framework** (backend) and **React.js** (frontend).  
@@ -84,9 +99,5 @@ cd frontend
 npm install
 npm start
 
-###Screenshots
-![Screenshot](screenshots/home_page.png)
-![Screenshot](screenshots/job_list.png)
-![Screenshot](screenshots/job_detail.png)
-![Screenshot](screenshots/dashboard.png)
-![Screenshot](screenshots/job_post.png)
+
+
