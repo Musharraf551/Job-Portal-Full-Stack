@@ -74,58 +74,75 @@ function JobDetail() {
   if (error)
     return (
       <div className="container mt-5">
-        <div className="alert alert-danger">{error}</div>
+        <div className="alert alert-danger shadow-sm">{error}</div>
       </div>
     );
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow-sm">
+    <div className="container my-5">
+      {/* Job Info */}
+      <div className="card border-0 shadow-lg p-4 rounded-4">
         <div className="card-body">
-          <h2 className="card-title">{job.title}</h2>
-          <p className="card-text">{job.description}</p>
-          <p>
+          <h2 className="fw-bold text-primary mb-3">{job.title}</h2>
+          <p className="fs-5 text-muted">{job.company}</p>
+          <p className="mb-2">
+            <i className="bi bi-geo-alt-fill text-danger me-2"></i>
             <strong>Location:</strong> {job.location}
           </p>
           {job.salary && (
-            <p>
+            <p className="mb-3">
+              <i className="bi bi-cash-stack text-success me-2"></i>
               <strong>Salary:</strong> {job.salary}
             </p>
           )}
-          <p className="text-muted">
-            Posted on: {new Date(job.created_at).toLocaleDateString()}
+          <p className="small text-muted mb-4">
+            📅 Posted on: {new Date(job.created_at).toLocaleDateString()}
           </p>
+          <h5 className="fw-bold">Job Description</h5>
+          <p className="text-secondary">{job.description}</p>
         </div>
       </div>
 
-      <div className="card mt-4">
+      {/* Application Form */}
+      <div className="card border-0 shadow-lg p-4 rounded-4 mt-4">
         <div className="card-body">
-          <h4 className="card-title mb-3">Apply for this Job</h4>
+          <h4 className="fw-bold mb-3 text-success">
+            <i className="bi bi-pencil-square me-2"></i> Apply for this Job
+          </h4>
+
           <div className="mb-3">
-            <label className="form-label">Cover Letter</label>
+            <label className="form-label fw-semibold">Cover Letter</label>
             <textarea
-              className="form-control"
+              className="form-control shadow-sm"
               value={coverLetter}
               onChange={(e) => setCoverLetter(e.target.value)}
-              placeholder="Write your cover letter here"
+              placeholder="Write your cover letter here..."
               rows={5}
             ></textarea>
           </div>
+
           <div className="mb-3">
-            <label className="form-label">Upload Resume</label>
+            <label className="form-label fw-semibold">Upload Resume</label>
             <input
-              className="form-control"
+              className="form-control shadow-sm"
               type="file"
               onChange={(e) => setResume(e.target.files[0])}
             />
+            <small className="text-muted">
+              Supported formats: PDF, DOC, DOCX
+            </small>
           </div>
-          <button className="btn btn-primary" onClick={handleApply}>
+
+          <button
+            className="btn btn-primary px-4 py-2 rounded-pill shadow-sm"
+            onClick={handleApply}
+          >
             Submit Application
           </button>
 
           {applyMessage && (
             <div
-              className={`alert mt-3 ${
+              className={`alert mt-3 rounded-3 shadow-sm ${
                 applyMessage.includes("✅") ? "alert-success" : "alert-danger"
               }`}
             >

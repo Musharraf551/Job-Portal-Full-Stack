@@ -26,7 +26,7 @@ function Login() {
       const profile = await fetchUserProfile();
       localStorage.setItem("user_profile", JSON.stringify(profile));
 //----------------------------------
-      navigate('/jobs');
+      navigate('/');
     } else {
       setError('Invalid credentials');
     }
